@@ -2,8 +2,6 @@
 
 A Flutter widget library for rendering interactive spider/radar charts. This library provides a flexible and customizable way to visualize multi-variable data in a radar chart format.
 
-![Interactive Demo](doc/assets/InterractivplayChart.gif)
-
 ## Features
 
 - **Spider Chart**: Customizable radar chart with support for multiple datasets.
@@ -13,13 +11,13 @@ A Flutter widget library for rendering interactive spider/radar charts. This lib
 
 ## Screenshots
 
-|                   Interactive Chart                   |               List Card                |
-| :---------------------------------------------------: | :------------------------------------: |
-| ![Interactive Chart](doc/assets/interractivChart.png) | ![List Card](doc/assets/ListChart.png) |
+|                     Interactive Chart                     |               List Card                |
+| :-------------------------------------------------------: | :------------------------------------: |
+| ![Interactive Chart](doc/assets/InterractivplayChart.gif) | ![List Card](doc/assets/ListChart.png) |
 
-|               Grid Card                |                   Compact Row                    |
-| :------------------------------------: | :----------------------------------------------: |
-| ![Grid Card](doc/assets/GridChart.png) | ![Compact Row](doc/assets/Comoact Row Chart.png) |
+|               Grid Card                |                  Compact Row                   |
+| :------------------------------------: | :--------------------------------------------: |
+| ![Grid Card](doc/assets/GridChart.png) | ![Compact Row](doc/assets/ComoactRowChart.png) |
 
 ## Installation
 
