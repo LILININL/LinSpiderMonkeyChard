@@ -1,5 +1,5 @@
-name: chard
-description: "A new Flutter project."
+name: lin_spider_monkey_chart
+description: "A Flutter widget library for rendering spider/radar charts with interactive features."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -30,11 +30,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^1.2.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8
 
 dev_dependencies:
   flutter_test:
