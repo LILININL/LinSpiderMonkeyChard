@@ -1,0 +1,146 @@
+import 'package:flutter/material.dart';
+
+class SpiderChartThemeData {
+  /// Color of the spider web grid lines
+  final Color gridColor;
+
+  /// Color of the dashed inner circles
+  final Color gridDashedColor;
+
+  /// Color of the axis lines radiating from center
+  final Color axisColor;
+
+  /// Color of the data polygon outline
+  final Color lineColor;
+
+  /// Color of the data polygon fill (if gradient is disabled)
+  final Color fillColor;
+
+  /// Whether to use a gradient fill for the data polygon
+  final bool useGradient;
+
+  /// Gradient colors for the data polygon (if useGradient is true)
+  final List<Color>? gradientColors;
+
+  /// Style for the labels around the chart
+  final TextStyle labelStyle;
+
+  /// Style for the selected label (when highlighted)
+  final TextStyle selectedLabelStyle;
+
+  /// Whether to show/highlight the selected label
+  final bool showSelectedLabel;
+
+  /// Whether to show the selected label as a title above the chart
+  final bool showTitleSelectedLabel;
+
+  /// Style for the selected label title
+  final TextStyle titleSelectedLabelStyle;
+
+  /// Top offset for the selected label title
+  final double titleSelectedLabelTopOffset;
+
+  /// Top offset for the chart itself
+  final double chartTopOffset;
+
+  /// Distance from the chart outer ring to the labels
+  final double labelDistance;
+
+  /// Vertical offset for the score bubble
+  final double bubbleOffset;
+
+  /// Width of the data line
+  final double strokeWidth;
+
+  /// Size of the dots at data points
+  final double pointSize;
+
+  /// Color of the dots at data points
+  final Color pointColor;
+
+  const SpiderChartThemeData({
+    this.gridColor = const Color(0x4D9E9E9E), // Colors.grey.withOpacity(0.3)
+    this.gridDashedColor = const Color(
+      0x337B4DFF,
+    ), // Colors.deepPurple.withOpacity(0.2)
+    this.axisColor = const Color(0x1A9E9E9E), // Colors.grey.withOpacity(0.1)
+    this.lineColor = const Color(0xFF7B4DFF), // Colors.deepPurple
+    this.fillColor = const Color(
+      0x267B4DFF,
+    ), // Colors.deepPurple.withOpacity(0.15)
+    this.useGradient = false,
+    this.gradientColors,
+    this.labelStyle = const TextStyle(
+      color: Colors.black87,
+      fontSize: 10,
+      fontWeight: FontWeight.w500,
+    ),
+    this.selectedLabelStyle = const TextStyle(
+      color: Color(0xFF7B4DFF),
+      fontSize: 12,
+      fontWeight: FontWeight.bold,
+    ),
+    this.showSelectedLabel = true,
+    this.showTitleSelectedLabel = false,
+    this.titleSelectedLabelStyle = const TextStyle(
+      color: Colors.black87,
+      fontSize: 16,
+      fontWeight: FontWeight.bold,
+    ),
+    this.titleSelectedLabelTopOffset = 0.0,
+    this.chartTopOffset = 0.0,
+    this.labelDistance = 10.0,
+    this.bubbleOffset = 10.0,
+    this.strokeWidth = 3.0,
+    this.pointSize = 4.0,
+    this.pointColor = const Color(0xFF7B4DFF),
+  });
+
+  /// Creates a copy of this theme but with the given fields replaced with the new values.
+  SpiderChartThemeData copyWith({
+    Color? gridColor,
+    Color? gridDashedColor,
+    Color? axisColor,
+    Color? lineColor,
+    Color? fillColor,
+    bool? useGradient,
+    List<Color>? gradientColors,
+    TextStyle? labelStyle,
+    TextStyle? selectedLabelStyle,
+    bool? showSelectedLabel,
+    bool? showTitleSelectedLabel,
+    TextStyle? titleSelectedLabelStyle,
+    double? titleSelectedLabelTopOffset,
+    double? chartTopOffset,
+    double? labelDistance,
+    double? bubbleOffset,
+    double? strokeWidth,
+    double? pointSize,
+    Color? pointColor,
+  }) {
+    return SpiderChartThemeData(
+      gridColor: gridColor ?? this.gridColor,
+      gridDashedColor: gridDashedColor ?? this.gridDashedColor,
+      axisColor: axisColor ?? this.axisColor,
+      lineColor: lineColor ?? this.lineColor,
+      fillColor: fillColor ?? this.fillColor,
+      useGradient: useGradient ?? this.useGradient,
+      gradientColors: gradientColors ?? this.gradientColors,
+      labelStyle: labelStyle ?? this.labelStyle,
+      selectedLabelStyle: selectedLabelStyle ?? this.selectedLabelStyle,
+      showSelectedLabel: showSelectedLabel ?? this.showSelectedLabel,
+      showTitleSelectedLabel:
+          showTitleSelectedLabel ?? this.showTitleSelectedLabel,
+      titleSelectedLabelStyle:
+          titleSelectedLabelStyle ?? this.titleSelectedLabelStyle,
+      titleSelectedLabelTopOffset:
+          titleSelectedLabelTopOffset ?? this.titleSelectedLabelTopOffset,
+      chartTopOffset: chartTopOffset ?? this.chartTopOffset,
+      labelDistance: labelDistance ?? this.labelDistance,
+      bubbleOffset: bubbleOffset ?? this.bubbleOffset,
+      strokeWidth: strokeWidth ?? this.strokeWidth,
+      pointSize: pointSize ?? this.pointSize,
+      pointColor: pointColor ?? this.pointColor,
+    );
+  }
+}
