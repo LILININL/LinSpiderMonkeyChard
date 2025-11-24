@@ -58,6 +58,12 @@ class SpiderChartThemeData {
   /// Color of the dots at data points
   final Color pointColor;
 
+  /// Whether to rotate the chart so the selected label is at the top
+  final bool rotateToTop;
+
+  /// Duration of the rotation animation
+  final Duration rotationDuration;
+
   const SpiderChartThemeData({
     this.gridColor = const Color(0x4D9E9E9E), // Colors.grey.withOpacity(0.3)
     this.gridDashedColor = const Color(
@@ -94,6 +100,8 @@ class SpiderChartThemeData {
     this.strokeWidth = 3.0,
     this.pointSize = 4.0,
     this.pointColor = const Color(0xFF7B4DFF),
+    this.rotateToTop = true,
+    this.rotationDuration = const Duration(milliseconds: 500),
   });
 
   /// Creates a copy of this theme but with the given fields replaced with the new values.
@@ -117,6 +125,8 @@ class SpiderChartThemeData {
     double? strokeWidth,
     double? pointSize,
     Color? pointColor,
+    bool? rotateToTop,
+    Duration? rotationDuration,
   }) {
     return SpiderChartThemeData(
       gridColor: gridColor ?? this.gridColor,
@@ -141,6 +151,8 @@ class SpiderChartThemeData {
       strokeWidth: strokeWidth ?? this.strokeWidth,
       pointSize: pointSize ?? this.pointSize,
       pointColor: pointColor ?? this.pointColor,
+      rotateToTop: rotateToTop ?? this.rotateToTop,
+      rotationDuration: rotationDuration ?? this.rotationDuration,
     );
   }
 }

@@ -66,7 +66,9 @@ class _InteractiveDemoState extends State<InteractiveDemo> {
                 size: Size.infinite,
                 theme: const SpiderChartThemeData(
                   labelDistance: 20,
-                  bubbleOffset: 100,
+                  bubbleOffset: 0,
+                  rotateToTop: true,
+                  rotationDuration: Duration(milliseconds: 1400),
                   showSelectedLabel: true,
                   showTitleSelectedLabel: true,
                   titleSelectedLabelTopOffset: 0.0,

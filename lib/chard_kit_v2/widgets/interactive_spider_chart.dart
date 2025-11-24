@@ -42,6 +42,7 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
     if (widget.initialSelectedIndex != null) {
       selectedIndex = widget.initialSelectedIndex;
     } else if (widget.data.isNotEmpty) {
+      // Find first index with score > 0
       int foundIndex = -1;
       for (int i = 0; i < widget.data.length; i++) {
         if (widget.data[i] > 0) {
@@ -55,28 +56,43 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
       }
     }
 
-    if (selectedIndex != null && widget.labels.isNotEmpty) {
+    if (selectedIndex != null &&
+        widget.labels.isNotEmpty &&
+        widget.theme.rotateToTop) {
       final angleStep = (2 * pi) / widget.labels.length;
       _targetRotation = -(selectedIndex! * angleStep);
     }
   }
 
+  Offset _calculateBubblePosition(int index, Size chartSize) {
+    final size = min(chartSize.width, chartSize.height);
+    final center = size / 2;
+    final radius = (size / 2) * 0.75;
+    final labelRadius = radius + widget.theme.labelDistance;
+    final angleStep = (2 * pi) / widget.labels.length;
+    const startAngle = -pi / 2;
+
+    final angle = startAngle + (angleStep * index);
+    final lx = center + labelRadius * cos(angle);
+    final ly = center + labelRadius * sin(angle);
+    return Offset(lx, ly);
+  }
+
   void _updateSelection(int index) {
     setState(() {
       selectedIndex = index;
-      final angleStep = (2 * pi) / widget.labels.length;
-      final target = -(index * angleStep);
 
-      // Shortest path logic
-      double diff = target - _targetRotation;
-      while (diff < -pi) {
-        diff += 2 * pi;
-      }
-      while (diff > pi) {
-        diff -= 2 * pi;
-      }
+      if (widget.theme.rotateToTop) {
+        final angleStep = (2 * pi) / widget.labels.length;
+        final target = -(index * angleStep);
 
-      _targetRotation += diff;
+        // Shortest path logic
+        double diff = target - _targetRotation;
+        while (diff < -pi) diff += 2 * pi;
+        while (diff > pi) diff -= 2 * pi;
+
+        _targetRotation += diff;
+      }
     });
   }
 
@@ -101,14 +117,20 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
         if (width.isInfinite || width <= 0) width = 300;
         if (height.isInfinite || height <= 0) height = 300;
 
+        final chartSize = Size(width, height);
         final radius = min(width, height) / 2 * 0.75;
+
+        Offset? bubbleOffset;
+        if (!widget.theme.rotateToTop && selectedIndex != null) {
+          bubbleOffset = _calculateBubblePosition(selectedIndex!, chartSize);
+        }
 
         return SizedBox(
           width: width,
           height: height + 100, // Add space for bubble
           child: TweenAnimationBuilder<double>(
             tween: Tween(end: _targetRotation),
-            duration: const Duration(milliseconds: 500),
+            duration: widget.theme.rotationDuration,
             curve: Curves.easeInOut,
             builder: (context, rotation, child) {
               return Stack(
@@ -149,18 +171,36 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
                     ),
                   ),
                   if (selectedIndex != null)
-                    Positioned(
-                      left: (width / 2) - 40,
-                      top:
-                          widget.theme.chartTopOffset +
-                          (height / 2) -
-                          radius -
-                          widget.theme.bubbleOffset,
-                      child: ScoreBubble(
-                        score: widget.data[selectedIndex!],
-                        color: widget.theme.lineColor,
-                      ),
-                    ),
+                    widget.theme.rotateToTop
+                        ? Positioned(
+                            left:
+                                (width / 2) - 40, // Center bubble (width 80/2)
+                            top:
+                                widget.theme.chartTopOffset +
+                                (height / 2) -
+                                radius -
+                                widget.theme.bubbleOffset,
+                            child: ScoreBubble(
+                              score: widget.data[selectedIndex!],
+                              color: widget.theme.lineColor,
+                            ),
+                          )
+                        : AnimatedPositioned(
+                            duration: widget.theme.rotationDuration,
+                            curve: Curves.easeInOut,
+                            left: bubbleOffset != null
+                                ? bubbleOffset.dx - 40
+                                : (width / 2) - 40,
+                            top: bubbleOffset != null
+                                ? bubbleOffset.dy +
+                                      widget.theme.chartTopOffset -
+                                      widget.theme.bubbleOffset
+                                : 0,
+                            child: ScoreBubble(
+                              score: widget.data[selectedIndex!],
+                              color: widget.theme.lineColor,
+                            ),
+                          ),
                 ],
               );
             },
