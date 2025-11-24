@@ -2,7 +2,7 @@ name: lin_spider_monkey_chart
 description: "A Flutter widget library for rendering spider/radar charts with interactive features."
 repository: https://github.com/LILININL/chard
 homepage: https://whylin.xyz
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: ^3.9.2
