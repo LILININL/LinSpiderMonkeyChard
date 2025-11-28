@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'triangle_clipper.dart';
 
 enum BubbleAnchor { label, dataPoint }
+enum TitleLabelMode { hidden, shown }
+enum TitleLabelBehavior { always, toggleOnTap }
 
 class SpiderChartThemeData {
   /// Color of the spider web grid lines
@@ -47,7 +49,17 @@ class SpiderChartThemeData {
   final bool showSelectedLabel;
 
   /// Whether to show the selected label as a title above the chart
+  /// Use [titleLabelMode] to control visibility.
+  @Deprecated('Use titleLabelMode instead')
   final bool showTitleSelectedLabel;
+
+  /// Controls visibility of the selected label title.
+  final TitleLabelMode titleLabelMode;
+
+  /// Controls how the title behaves when tapping labels/data.
+  /// - [TitleLabelBehavior.always]: keep the title visible while selected.
+  /// - [TitleLabelBehavior.toggleOnTap]: tapping the same point hides/shows it.
+  final TitleLabelBehavior titleLabelBehavior;
 
   /// Whether to use spline (curved) lines for the data polygon
   final bool useSpline;
@@ -122,7 +134,9 @@ class SpiderChartThemeData {
       fontWeight: FontWeight.bold,
     ),
     this.showSelectedLabel = true,
-    this.showTitleSelectedLabel = false,
+    bool? showTitleSelectedLabel,
+    TitleLabelMode titleLabelMode = TitleLabelMode.hidden,
+    this.titleLabelBehavior = TitleLabelBehavior.always,
     this.useSpline = false,
     this.titleSelectedLabelStyle = const TextStyle(
       color: Colors.black87,
@@ -141,7 +155,14 @@ class SpiderChartThemeData {
     this.triangleDirection = TriangleDirection.down,
     this.autoTriangleDirection = true,
     this.bubbleAnchor = BubbleAnchor.label,
-  });
+  })  : titleLabelMode =
+            showTitleSelectedLabel != null
+                ? (showTitleSelectedLabel
+                    ? TitleLabelMode.shown
+                    : TitleLabelMode.hidden)
+                : titleLabelMode,
+        showTitleSelectedLabel = showTitleSelectedLabel ??
+            (titleLabelMode == TitleLabelMode.shown);
 
   /// Creates a copy of this theme but with the given fields replaced with the new values.
   SpiderChartThemeData copyWith({
@@ -160,6 +181,8 @@ class SpiderChartThemeData {
     TextStyle? selectedLabelStyle,
     bool? showSelectedLabel,
     bool? showTitleSelectedLabel,
+    TitleLabelMode? titleLabelMode,
+    TitleLabelBehavior? titleLabelBehavior,
     TextStyle? titleSelectedLabelStyle,
     double? titleSelectedLabelTopOffset,
     double? chartTopOffset,
@@ -174,6 +197,13 @@ class SpiderChartThemeData {
     bool? autoTriangleDirection,
     BubbleAnchor? bubbleAnchor,
   }) {
+    final resolvedTitleLabelMode =
+        showTitleSelectedLabel != null
+            ? (showTitleSelectedLabel
+                ? TitleLabelMode.shown
+                : TitleLabelMode.hidden)
+            : titleLabelMode ?? this.titleLabelMode;
+
     return SpiderChartThemeData(
       gridLineColor: gridLineColor ?? this.gridLineColor,
       gridDashedLineColor: gridDashedLineColor ?? this.gridDashedLineColor,
@@ -193,7 +223,9 @@ class SpiderChartThemeData {
       selectedLabelStyle: selectedLabelStyle ?? this.selectedLabelStyle,
       showSelectedLabel: showSelectedLabel ?? this.showSelectedLabel,
       showTitleSelectedLabel:
-          showTitleSelectedLabel ?? this.showTitleSelectedLabel,
+          resolvedTitleLabelMode == TitleLabelMode.shown,
+      titleLabelMode: resolvedTitleLabelMode,
+      titleLabelBehavior: titleLabelBehavior ?? this.titleLabelBehavior,
       titleSelectedLabelStyle:
           titleSelectedLabelStyle ?? this.titleSelectedLabelStyle,
       titleSelectedLabelTopOffset:

@@ -64,7 +64,7 @@ class _SplineChartDemoState extends State<SplineChartDemo> {
                 data: data,
                 maxValue: 100,
                 size: Size.infinite,
-                theme: const SpiderChartThemeData(
+                theme: SpiderChartThemeData(
                   useSpline: true,
                   rotateToTop: false,
                   gridLineColor: Color(0xFFE0E0E0),
@@ -89,7 +89,8 @@ class _SplineChartDemoState extends State<SplineChartDemo> {
                   ),
                   bubbleAnchor: BubbleAnchor.label,
                   autoTriangleDirection: true,
-                  showTitleSelectedLabel: true,
+                  titleLabelMode: TitleLabelMode.shown,
+                  titleLabelBehavior: TitleLabelBehavior.toggleOnTap,
                   titleSelectedLabelTopOffset: 0,
                   titleSelectedLabelStyle: TextStyle(
                     color: Colors.black87,

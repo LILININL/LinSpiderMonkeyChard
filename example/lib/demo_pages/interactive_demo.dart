@@ -60,11 +60,11 @@ class _InteractiveDemoState extends State<InteractiveDemo> {
             child: Padding(
               padding: const EdgeInsets.all(24.0),
               child: InteractiveSpiderChart(
-                labels: [],
-                data: [],
+                labels: labels,
+                data: data,
                 maxValue: 100,
                 size: Size.infinite,
-                theme: const SpiderChartThemeData(
+                theme: SpiderChartThemeData(
                   // กำหนดทิศทางของสามเหลี่ยม (up หรือ down)
                   triangleDirection: TriangleDirection.up,
                   // centerCircleGradientColors: [Colors.black, Colors.grey],
@@ -77,7 +77,7 @@ class _InteractiveDemoState extends State<InteractiveDemo> {
                   rotateToTop: false,
                   rotationDuration: Duration(milliseconds: 1000),
                   showSelectedLabel: true,
-                  showTitleSelectedLabel: true,
+                  titleLabelMode: TitleLabelMode.shown,
 
                   titleSelectedLabelStyle: TextStyle(
                     color: Colors.black87,
@@ -97,6 +97,7 @@ class _InteractiveDemoState extends State<InteractiveDemo> {
                   dataFillColor: Color(0x333F51B5),
                   pointColor: Colors.indigo,
                   useGradient: true,
+                  titleLabelBehavior: TitleLabelBehavior.toggleOnTap,
                   gradientColors: [Color(0x663F51B5), Color(0x333F51B5)],
                 ),
               ),

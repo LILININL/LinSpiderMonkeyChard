@@ -72,20 +72,6 @@ class _ChartDetailPageState extends State<ChartDetailPage> {
     if (widget.initialSelectedIndex != null) {
       selectedIndex = widget.initialSelectedIndex;
       _calculateBubblePosition(selectedIndex!);
-    } else if (widget.data.isNotEmpty) {
-      // Find first index with score > 0
-      int foundIndex = -1;
-      for (int i = 0; i < widget.data.length; i++) {
-        if ((widget.data[i] ?? 0) > 0) {
-          foundIndex = i;
-          break;
-        }
-      }
-
-      if (foundIndex != -1) {
-        selectedIndex = foundIndex;
-        _calculateBubblePosition(selectedIndex!);
-      }
     }
   }
 
@@ -148,8 +134,14 @@ class _ChartDetailPageState extends State<ChartDetailPage> {
                       showLabels: widget.showChartLabels,
                       onLabelTap: (index, offset) {
                         setState(() {
-                          selectedIndex = index;
-                          bubbleOffset = offset;
+                          // Toggle visibility when tapping the same label/data
+                          if (selectedIndex == index) {
+                            selectedIndex = null;
+                            bubbleOffset = null;
+                          } else {
+                            selectedIndex = index;
+                            bubbleOffset = offset;
+                          }
                         });
                       },
                     ),

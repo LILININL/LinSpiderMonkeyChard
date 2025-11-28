@@ -94,6 +94,15 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
 
   void _updateSelection(int index) {
     setState(() {
+      final isSameSelection = selectedIndex == index;
+
+      if (widget.theme.titleLabelBehavior ==
+              TitleLabelBehavior.toggleOnTap &&
+          isSameSelection) {
+        selectedIndex = null;
+        return;
+      }
+
       selectedIndex = index;
 
       if (widget.theme.rotateToTop) {
@@ -134,6 +143,15 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
         // Fallback if still infinite or invalid
         if (width.isInfinite || width <= 0) width = 300;
         if (height.isInfinite || height <= 0) height = 300;
+
+        final bool isTitleVisible =
+            widget.theme.titleLabelMode == TitleLabelMode.shown &&
+                selectedIndex != null &&
+                widget.labels.isNotEmpty;
+        // Reserve extra space for the animated title without moving the chart itself.
+        const double titleSpace = 80.0;
+        final double chartTopOffset = widget.theme.chartTopOffset;
+        final double totalHeight = height + titleSpace;
 
         final chartSize = Size(width, height);
         final radius = min(width, height) / 2 * 0.85;
@@ -189,12 +207,12 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
           // Center Y is height/2. Top is height/2 - radius.
           // So position is center - targetRadius.
           rotateToTopTop =
-              widget.theme.chartTopOffset + (height / 2) - targetRadius;
+              chartTopOffset + (height / 2) - targetRadius;
         }
 
         return SizedBox(
           width: width,
-          height: height, // Removed + 100 to avoid eating up space
+          height: totalHeight,
           child: TweenAnimationBuilder<double>(
             tween: Tween(end: _targetRotation),
             duration: widget.theme.rotationDuration,
@@ -204,27 +222,45 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
                 alignment: Alignment.center,
                 clipBehavior: Clip.none,
                 children: [
-                  if (widget.theme.showTitleSelectedLabel &&
-                      selectedIndex != null &&
-                      widget.labels.isNotEmpty)
-                    Positioned(
-                      top:
-                          (height / 2) -
-                          radius -
-                          100 +
-                          widget.theme.titleSelectedLabelTopOffset,
-                      left: 16,
-                      right: 16,
-                      child: Text(
-                        widget.labels[selectedIndex!],
-                        style: widget.theme.titleSelectedLabelStyle,
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
                   Positioned(
-                    top: widget.theme.chartTopOffset,
+                    top: (height / 2) -
+                        radius -
+                        100 +
+                        widget.theme.titleSelectedLabelTopOffset,
+                    left: 16,
+                    right: 16,
+                    child: AnimatedSwitcher(
+                      duration: widget.theme.rotationDuration,
+                      transitionBuilder: (child, animation) {
+                        final curved =
+                            CurvedAnimation(parent: animation, curve: Curves.easeInOut);
+                        return FadeTransition(
+                          opacity: curved,
+                          child: SlideTransition(
+                            position: Tween<Offset>(
+                              begin: const Offset(0, -0.2),
+                              end: Offset.zero,
+                            ).animate(curved),
+                            child: child,
+                          ),
+                        );
+                      },
+                      child: isTitleVisible
+                          ? Text(
+                              widget.labels[selectedIndex!],
+                              key: ValueKey<int?>(selectedIndex),
+                              style: widget.theme.titleSelectedLabelStyle,
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            )
+                          : const SizedBox.shrink(key: ValueKey<String>('no-title')),
+                    ),
+                  ),
+                  Positioned(
+                    top: chartTopOffset,
+                    left: 0,
+                    right: 0,
                     child: SizedBox(
                       width: width,
                       height: height,
@@ -268,7 +304,7 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
                                 ? bubbleOffset.dx
                                 : width / 2,
                             top: bubbleOffset != null
-                                ? bubbleOffset.dy + widget.theme.chartTopOffset
+                                ? bubbleOffset.dy + chartTopOffset
                                 : 0,
                             child: TweenAnimationBuilder<double>(
                               duration: widget.theme.rotationDuration,
