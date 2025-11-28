@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'triangle_clipper.dart';
+
+enum BubbleAnchor { label, dataPoint }
 
 class SpiderChartThemeData {
   /// Color of the spider web grid lines
@@ -22,6 +25,18 @@ class SpiderChartThemeData {
   /// Gradient colors for the data polygon (if useGradient is true)
   final List<Color>? gradientColors;
 
+  /// Gradient colors for the data line (optional)
+  final List<Color>? dataLineGradientColors;
+
+  /// Gradient colors for the grid lines (optional)
+  final List<Color>? gridLineGradientColors;
+
+  /// Colors for the center circle gradient
+  final List<Color>? centerCircleGradientColors;
+
+  /// Color for the center circle (overrides gradient if provided)
+  final Color? centerCircleColor;
+
   /// Style for the labels around the chart
   final TextStyle labelStyle;
 
@@ -34,7 +49,10 @@ class SpiderChartThemeData {
   /// Whether to show the selected label as a title above the chart
   final bool showTitleSelectedLabel;
 
-  /// Style for the selected label title
+  /// Whether to use spline (curved) lines for the data polygon
+  final bool useSpline;
+
+  /// Style for the title selected label
   final TextStyle titleSelectedLabelStyle;
 
   /// Top offset for the selected label title
@@ -64,6 +82,15 @@ class SpiderChartThemeData {
   /// Duration of the rotation animation
   final Duration rotationDuration;
 
+  /// Direction of the triangle on the score bubble
+  final TriangleDirection triangleDirection;
+
+  /// Whether to automatically adjust the triangle direction based on position
+  final bool autoTriangleDirection;
+
+  /// Where to anchor the score bubble (label or data point)
+  final BubbleAnchor bubbleAnchor;
+
   const SpiderChartThemeData({
     this.gridLineColor = const Color(
       0x4D9E9E9E,
@@ -80,6 +107,10 @@ class SpiderChartThemeData {
     ), // Colors.deepPurple.withOpacity(0.15)
     this.useGradient = false,
     this.gradientColors,
+    this.dataLineGradientColors,
+    this.gridLineGradientColors,
+    this.centerCircleGradientColors,
+    this.centerCircleColor,
     this.labelStyle = const TextStyle(
       color: Colors.black87,
       fontSize: 10,
@@ -92,6 +123,7 @@ class SpiderChartThemeData {
     ),
     this.showSelectedLabel = true,
     this.showTitleSelectedLabel = false,
+    this.useSpline = false,
     this.titleSelectedLabelStyle = const TextStyle(
       color: Colors.black87,
       fontSize: 16,
@@ -106,6 +138,9 @@ class SpiderChartThemeData {
     this.pointColor = const Color(0xFF7B4DFF),
     this.rotateToTop = true,
     this.rotationDuration = const Duration(milliseconds: 500),
+    this.triangleDirection = TriangleDirection.down,
+    this.autoTriangleDirection = true,
+    this.bubbleAnchor = BubbleAnchor.label,
   });
 
   /// Creates a copy of this theme but with the given fields replaced with the new values.
@@ -117,6 +152,10 @@ class SpiderChartThemeData {
     Color? dataFillColor,
     bool? useGradient,
     List<Color>? gradientColors,
+    List<Color>? dataLineGradientColors,
+    List<Color>? gridLineGradientColors,
+    List<Color>? centerCircleGradientColors,
+    Color? centerCircleColor,
     TextStyle? labelStyle,
     TextStyle? selectedLabelStyle,
     bool? showSelectedLabel,
@@ -131,6 +170,9 @@ class SpiderChartThemeData {
     Color? pointColor,
     bool? rotateToTop,
     Duration? rotationDuration,
+    TriangleDirection? triangleDirection,
+    bool? autoTriangleDirection,
+    BubbleAnchor? bubbleAnchor,
   }) {
     return SpiderChartThemeData(
       gridLineColor: gridLineColor ?? this.gridLineColor,
@@ -140,6 +182,13 @@ class SpiderChartThemeData {
       dataFillColor: dataFillColor ?? this.dataFillColor,
       useGradient: useGradient ?? this.useGradient,
       gradientColors: gradientColors ?? this.gradientColors,
+      dataLineGradientColors:
+          dataLineGradientColors ?? this.dataLineGradientColors,
+      gridLineGradientColors:
+          gridLineGradientColors ?? this.gridLineGradientColors,
+      centerCircleGradientColors:
+          centerCircleGradientColors ?? this.centerCircleGradientColors,
+      centerCircleColor: centerCircleColor ?? this.centerCircleColor,
       labelStyle: labelStyle ?? this.labelStyle,
       selectedLabelStyle: selectedLabelStyle ?? this.selectedLabelStyle,
       showSelectedLabel: showSelectedLabel ?? this.showSelectedLabel,
@@ -157,6 +206,10 @@ class SpiderChartThemeData {
       pointColor: pointColor ?? this.pointColor,
       rotateToTop: rotateToTop ?? this.rotateToTop,
       rotationDuration: rotationDuration ?? this.rotationDuration,
+      triangleDirection: triangleDirection ?? this.triangleDirection,
+      autoTriangleDirection:
+          autoTriangleDirection ?? this.autoTriangleDirection,
+      bubbleAnchor: bubbleAnchor ?? this.bubbleAnchor,
     );
   }
 }

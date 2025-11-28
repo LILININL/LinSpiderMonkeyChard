@@ -12,7 +12,7 @@ class ChartDetailPage extends StatefulWidget {
   final List<String> labels;
 
   /// The data values corresponding to each label.
-  final List<double> data;
+  final List<double?> data;
 
   /// The theme for the chart.
   final SpiderChartThemeData theme;
@@ -41,8 +41,8 @@ class ChartDetailPage extends StatefulWidget {
   const ChartDetailPage({
     super.key,
     required this.title,
-    required this.labels,
-    required this.data,
+    List<String>? labels,
+    List<double?>? data,
     this.theme = const SpiderChartThemeData(),
     this.maxValue = 100,
     this.enableScroll = true,
@@ -51,7 +51,8 @@ class ChartDetailPage extends StatefulWidget {
     this.showTitleText = true,
     this.showChartLabels = true,
     this.initialSelectedIndex,
-  });
+  }) : labels = labels ?? const [],
+       data = data ?? const [];
 
   @override
   State<ChartDetailPage> createState() => _ChartDetailPageState();
@@ -75,7 +76,7 @@ class _ChartDetailPageState extends State<ChartDetailPage> {
       // Find first index with score > 0
       int foundIndex = -1;
       for (int i = 0; i < widget.data.length; i++) {
-        if (widget.data[i] > 0) {
+        if ((widget.data[i] ?? 0) > 0) {
           foundIndex = i;
           break;
         }
@@ -89,12 +90,14 @@ class _ChartDetailPageState extends State<ChartDetailPage> {
   }
 
   void _calculateBubblePosition(int index) {
+    if (widget.labels.isEmpty) return;
+
     // Calculate initial bubble position based on chart geometry
     // This is an approximation since we don't have the exact render size yet in initState
     // But for the initial state, we can estimate based on the provided chartWidth/Height
     final size = min(widget.chartWidth, widget.chartHeight);
     final center = size / 2;
-    final radius = (size / 2) * 0.75;
+    final radius = (size / 2) * 0.85;
     final labelRadius = radius + 25;
     final angleStep = (2 * pi) / widget.labels.length;
     const startAngle = -pi / 2;
@@ -113,7 +116,7 @@ class _ChartDetailPageState extends State<ChartDetailPage> {
         children: [
           const SizedBox(height: 20),
           if (widget.showTitleText)
-            if (selectedIndex != null)
+            if (selectedIndex != null && widget.labels.isNotEmpty)
               Text(
                 widget.labels[selectedIndex!],
                 style: const TextStyle(
@@ -152,7 +155,7 @@ class _ChartDetailPageState extends State<ChartDetailPage> {
                     ),
                   ),
                 ),
-                if (selectedIndex != null)
+                if (selectedIndex != null && widget.labels.isNotEmpty)
                   AnimatedPositioned(
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeInOut,
@@ -170,7 +173,11 @@ class _ChartDetailPageState extends State<ChartDetailPage> {
                               70 // Adjust for bubble height and chart top offset
                         : 0, // Top position if no selection
                     child: ScoreBubble(
-                      score: widget.data[selectedIndex!],
+                      score:
+                          (selectedIndex! < widget.data.length
+                              ? widget.data[selectedIndex!]
+                              : 0) ??
+                          0,
                       color: widget.theme.dataLineColor,
                     ),
                   ),

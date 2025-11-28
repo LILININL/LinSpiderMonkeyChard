@@ -60,19 +60,25 @@ class _InteractiveDemoState extends State<InteractiveDemo> {
             child: Padding(
               padding: const EdgeInsets.all(24.0),
               child: InteractiveSpiderChart(
-                labels: labels,
-                data: data,
+                labels: [],
+                data: [],
                 maxValue: 100,
                 size: Size.infinite,
                 theme: const SpiderChartThemeData(
-                  labelOffsetFromChart: 20,
-                  bubbleOffset: 100,
-                  rotateToTop: true,
+                  // กำหนดทิศทางของสามเหลี่ยม (up หรือ down)
+                  triangleDirection: TriangleDirection.up,
+                  // centerCircleGradientColors: [Colors.black, Colors.grey],
+                  gridDashedLineColor: Colors.blue,
+                  dataLineColor: Colors.purple,
+                  gridLineColor: Colors.orange,
+                  // labelOffsetFromChart: 20,
+                  // bubbleOffset: 0,
+                  bubbleAnchor: BubbleAnchor.dataPoint,
+                  rotateToTop: false,
                   rotationDuration: Duration(milliseconds: 1000),
                   showSelectedLabel: true,
                   showTitleSelectedLabel: true,
-                  titleSelectedLabelTopOffset: 0.0,
-                  chartTopOffset: 0.0,
+
                   titleSelectedLabelStyle: TextStyle(
                     color: Colors.black87,
                     fontSize: 18,
@@ -88,7 +94,6 @@ class _InteractiveDemoState extends State<InteractiveDemo> {
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
-                  dataLineColor: Colors.indigo,
                   dataFillColor: Color(0x333F51B5),
                   pointColor: Colors.indigo,
                   useGradient: true,

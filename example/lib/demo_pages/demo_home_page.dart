@@ -3,6 +3,7 @@ import 'list_card_demo.dart';
 import 'grid_card_demo.dart';
 import 'compact_row_demo.dart';
 import 'interactive_demo.dart';
+import 'spline_chart_demo.dart';
 
 class DemoHomePage extends StatefulWidget {
   const DemoHomePage({super.key});
@@ -105,6 +106,19 @@ class _DemoHomePageState extends State<DemoHomePage> {
               context,
               MaterialPageRoute(
                 builder: (context) => InteractiveDemo(groups: _groupsData),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          _buildMenuButton(
+            context,
+            'Spline Chart Demo',
+            'Curved lines chart (Image Style)',
+            Icons.show_chart,
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SplineChartDemo(groups: _groupsData),
               ),
             ),
           ),

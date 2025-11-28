@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'spider_chart.dart';
 import 'score_bubble.dart';
 import 'spider_chart_theme.dart';
+import 'triangle_clipper.dart';
 
 class InteractiveSpiderChart extends StatefulWidget {
   final List<String> labels;
-  final List<double> data;
+  final List<double?> data;
   final double maxValue;
   final SpiderChartThemeData theme;
   final bool showLabels;
@@ -15,14 +16,15 @@ class InteractiveSpiderChart extends StatefulWidget {
 
   const InteractiveSpiderChart({
     super.key,
-    required this.labels,
-    required this.data,
+    List<String>? labels,
+    List<double?>? data,
     this.maxValue = 100,
     this.theme = const SpiderChartThemeData(),
     this.showLabels = true,
     this.initialSelectedIndex,
     this.size = const Size(350, 350),
-  });
+  }) : labels = labels ?? const [],
+       data = data ?? const [];
 
   @override
   State<InteractiveSpiderChart> createState() => _InteractiveSpiderChartState();
@@ -45,7 +47,7 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
       // Find first index with score > 0
       int foundIndex = -1;
       for (int i = 0; i < widget.data.length; i++) {
-        if (widget.data[i] > 0) {
+        if ((widget.data[i] ?? 0) > 0) {
           foundIndex = i;
           break;
         }
@@ -65,16 +67,28 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
   }
 
   Offset _calculateBubblePosition(int index, Size chartSize) {
-    final size = min(chartSize.width, chartSize.height);
-    final center = size / 2;
-    final radius = (size / 2) * 0.75;
-    final labelRadius = radius + widget.theme.labelOffsetFromChart;
+    if (widget.labels.isEmpty) return Offset.zero;
+
+    final centerX = chartSize.width / 2;
+    final centerY = chartSize.height / 2;
+    final radius = min(chartSize.width, chartSize.height) / 2 * 0.85;
+
+    double targetRadius;
+    if (widget.theme.bubbleAnchor == BubbleAnchor.dataPoint) {
+      final value =
+          (index < widget.data.length ? (widget.data[index] ?? 0) : 0) /
+          widget.maxValue;
+      targetRadius = radius * value;
+    } else {
+      targetRadius = radius + widget.theme.labelOffsetFromChart;
+    }
+
     final angleStep = (2 * pi) / widget.labels.length;
     const startAngle = -pi / 2;
 
     final angle = startAngle + (angleStep * index);
-    final labelX = center + labelRadius * cos(angle);
-    final labelY = center + labelRadius * sin(angle);
+    final labelX = centerX + targetRadius * cos(angle);
+    final labelY = centerY + targetRadius * sin(angle);
     return Offset(labelX, labelY);
   }
 
@@ -122,16 +136,65 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
         if (height.isInfinite || height <= 0) height = 300;
 
         final chartSize = Size(width, height);
-        final radius = min(width, height) / 2 * 0.75;
+        final radius = min(width, height) / 2 * 0.85;
 
         Offset? bubbleOffset;
-        if (!widget.theme.rotateToTop && selectedIndex != null) {
+        TriangleDirection currentTriangleDirection =
+            widget.theme.triangleDirection;
+
+        if (!widget.theme.rotateToTop &&
+            selectedIndex != null &&
+            widget.labels.isNotEmpty) {
           bubbleOffset = _calculateBubblePosition(selectedIndex!, chartSize);
+
+          if (widget.theme.autoTriangleDirection) {
+            final angleStep = (2 * pi) / widget.labels.length;
+            final angle = (-pi / 2) + (angleStep * selectedIndex!);
+            // Normalize angle to 0..2pi
+            double normalizedAngle = angle % (2 * pi);
+            if (normalizedAngle < 0) normalizedAngle += 2 * pi;
+
+            // If angle is in the bottom half (0 to pi), point up.
+            // Top half (pi to 2pi or -pi to 0), point down.
+            // Note: -pi/2 is top. 0 is right. pi/2 is bottom. pi is left.
+            // So bottom half is roughly 0 to pi in standard math, but here -pi/2 is top.
+            // Let's check sin(angle).
+            // sin(-pi/2) = -1 (top). sin(pi/2) = 1 (bottom).
+            // So if sin(angle) > 0, it's in the bottom half.
+            if (sin(angle) > 0) {
+              currentTriangleDirection = TriangleDirection.up;
+            } else {
+              currentTriangleDirection = TriangleDirection.down;
+            }
+          }
+        }
+
+        // Calculate top position for rotateToTop case
+        double rotateToTopTop = 0;
+        if (widget.theme.rotateToTop &&
+            selectedIndex != null &&
+            widget.labels.isNotEmpty) {
+          double targetRadius;
+          if (widget.theme.bubbleAnchor == BubbleAnchor.dataPoint) {
+            final value =
+                (selectedIndex! < widget.data.length
+                    ? (widget.data[selectedIndex!] ?? 0)
+                    : 0) /
+                widget.maxValue;
+            targetRadius = radius * value;
+          } else {
+            targetRadius = radius + widget.theme.labelOffsetFromChart;
+          }
+          // When rotated to top, the point is at -pi/2 (top).
+          // Center Y is height/2. Top is height/2 - radius.
+          // So position is center - targetRadius.
+          rotateToTopTop =
+              widget.theme.chartTopOffset + (height / 2) - targetRadius;
         }
 
         return SizedBox(
           width: width,
-          height: height + 100, // Add space for bubble
+          height: height, // Removed + 100 to avoid eating up space
           child: TweenAnimationBuilder<double>(
             tween: Tween(end: _targetRotation),
             duration: widget.theme.rotationDuration,
@@ -142,9 +205,14 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
                 clipBehavior: Clip.none,
                 children: [
                   if (widget.theme.showTitleSelectedLabel &&
-                      selectedIndex != null)
+                      selectedIndex != null &&
+                      widget.labels.isNotEmpty)
                     Positioned(
-                      top: widget.theme.titleSelectedLabelTopOffset,
+                      top:
+                          (height / 2) -
+                          radius -
+                          100 +
+                          widget.theme.titleSelectedLabelTopOffset,
                       left: 16,
                       right: 16,
                       child: Text(
@@ -174,35 +242,91 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
                       ),
                     ),
                   ),
-                  if (selectedIndex != null)
+                  if (selectedIndex != null && widget.labels.isNotEmpty)
                     widget.theme.rotateToTop
                         ? Positioned(
-                            left:
-                                (width / 2) - 40, // Center bubble (width 80/2)
-                            top:
-                                widget.theme.chartTopOffset +
-                                (height / 2) -
-                                radius -
-                                widget.theme.bubbleOffset,
-                            child: ScoreBubble(
-                              score: widget.data[selectedIndex!],
-                              color: widget.theme.dataLineColor,
+                            left: width / 2,
+                            top: rotateToTopTop,
+                            child: FractionalTranslation(
+                              translation: const Offset(-0.5, -1.0),
+                              child: ScoreBubble(
+                                score:
+                                    (selectedIndex! < widget.data.length
+                                        ? widget.data[selectedIndex!]
+                                        : 0) ??
+                                    0,
+                                color: widget.theme.dataLineColor,
+                                triangleDirection:
+                                    widget.theme.triangleDirection,
+                              ),
                             ),
                           )
                         : AnimatedPositioned(
                             duration: widget.theme.rotationDuration,
                             curve: Curves.easeInOut,
                             left: bubbleOffset != null
-                                ? bubbleOffset.dx - 40
-                                : (width / 2) - 40,
+                                ? bubbleOffset.dx
+                                : width / 2,
                             top: bubbleOffset != null
-                                ? bubbleOffset.dy +
-                                      widget.theme.chartTopOffset -
-                                      widget.theme.bubbleOffset
+                                ? bubbleOffset.dy + widget.theme.chartTopOffset
                                 : 0,
-                            child: ScoreBubble(
-                              score: widget.data[selectedIndex!],
-                              color: widget.theme.dataLineColor,
+                            child: TweenAnimationBuilder<double>(
+                              duration: widget.theme.rotationDuration,
+                              curve: Curves.easeInOut,
+                              tween: Tween<double>(
+                                end:
+                                    currentTriangleDirection ==
+                                        TriangleDirection.down
+                                    ? 0.0
+                                    : 1.0,
+                              ),
+                              builder: (context, value, child) {
+                                return FractionalTranslation(
+                                  translation: Offset(-0.5, -1.0 + value),
+                                  child: Transform.translate(
+                                    offset: Offset(0, -10.0 + (20.0 * value)),
+                                    child: Stack(
+                                      clipBehavior: Clip.none,
+                                      children: [
+                                        ScoreBubble(
+                                          score:
+                                              (selectedIndex! <
+                                                      widget.data.length
+                                                  ? widget.data[selectedIndex!]
+                                                  : 0) ??
+                                              0,
+                                          color: widget.theme.dataLineColor,
+                                          hideTriangle: true,
+                                        ),
+                                        Positioned.fill(
+                                          child: CustomSingleChildLayout(
+                                            delegate: _TrianglePositionDelegate(
+                                              progress: value,
+                                            ),
+                                            child: Transform.scale(
+                                              scaleY: 1.0 - (2.0 * value),
+                                              alignment: Alignment.center,
+                                              child: ClipPath(
+                                                clipper: TriangleClipper(
+                                                  direction:
+                                                      TriangleDirection.down,
+                                                ),
+                                                child: Container(
+                                                  width: 20,
+                                                  height: 10,
+                                                  color: widget
+                                                      .theme
+                                                      .dataLineColor,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                           ),
                 ],
@@ -212,5 +336,31 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
         );
       },
     );
+  }
+}
+
+class _TrianglePositionDelegate extends SingleChildLayoutDelegate {
+  final double progress;
+
+  _TrianglePositionDelegate({required this.progress});
+
+  @override
+  BoxConstraints getConstraintsForChild(BoxConstraints constraints) {
+    return BoxConstraints.loose(constraints.biggest);
+  }
+
+  @override
+  Offset getPositionForChild(Size size, Size childSize) {
+    // progress 0.0 -> Bottom (y = size.height)
+    // progress 1.0 -> Top (y = -childSize.height)
+    final double y =
+        size.height * (1.0 - progress) - (childSize.height * progress);
+    final double x = (size.width - childSize.width) / 2;
+    return Offset(x, y);
+  }
+
+  @override
+  bool shouldRelayout(_TrianglePositionDelegate oldDelegate) {
+    return progress != oldDelegate.progress;
   }
 }

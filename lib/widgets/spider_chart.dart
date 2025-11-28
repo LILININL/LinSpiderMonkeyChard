@@ -4,7 +4,7 @@ import 'spider_chart_theme.dart';
 
 class SpiderChart extends StatelessWidget {
   final List<String> labels;
-  final List<double> data;
+  final List<double?> data;
   final double maxValue;
   final SpiderChartThemeData theme;
   final Function(int, Offset)? onLabelTap;
@@ -14,15 +14,16 @@ class SpiderChart extends StatelessWidget {
 
   const SpiderChart({
     super.key,
-    required this.labels,
-    required this.data,
+    List<String>? labels,
+    List<double?>? data,
     this.maxValue = 100,
     this.theme = const SpiderChartThemeData(),
     this.onLabelTap,
     this.showLabels = true,
     this.selectedIndex,
     this.rotationAngle = 0.0,
-  });
+  }) : labels = labels ?? const [],
+       data = data ?? const [];
 
   @override
   Widget build(BuildContext context) {
@@ -52,8 +53,10 @@ class SpiderChart extends StatelessWidget {
   }
 
   void _handleTap(Offset localPosition, Size size) {
+    if (labels.isEmpty) return;
+
     final center = Offset(size.width / 2, size.height / 2);
-    final radius = min(size.width, size.height) / 2 * 0.75;
+    final radius = min(size.width, size.height) / 2 * 0.85;
     final angleStep = (2 * pi) / labels.length;
     final startAngle = -pi / 2 + rotationAngle;
 
@@ -73,7 +76,7 @@ class SpiderChart extends StatelessWidget {
 
       // Check if tap is near the data point (pointer)
       if (i < data.length) {
-        final value = data[i] / maxValue;
+        final value = (data[i] ?? 0) / maxValue;
         final pointRadius = radius * value;
         final pointX = center.dx + pointRadius * cos(angle);
         final pointY = center.dy + pointRadius * sin(angle);
@@ -91,7 +94,7 @@ class SpiderChart extends StatelessWidget {
 
 class _SpiderChartPainter extends CustomPainter {
   final List<String> labels;
-  final List<double> data;
+  final List<double?> data;
   final double maxValue;
   final SpiderChartThemeData theme;
   final bool showLabels;
@@ -111,17 +114,29 @@ class _SpiderChartPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final radius = min(size.width, size.height) / 2 * 0.75;
+    final radius = min(size.width, size.height) / 2 * 0.85;
 
     final paintGrid = Paint()
-      ..color = theme.gridLineColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1;
 
     final paintGridDashed = Paint()
-      ..color = theme.gridDashedLineColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1;
+
+    if (theme.gridLineGradientColors != null) {
+      final shader = LinearGradient(
+        colors: theme.gridLineGradientColors!,
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ).createShader(Rect.fromCircle(center: center, radius: radius));
+
+      paintGrid.shader = shader;
+      paintGridDashed.shader = shader;
+    } else {
+      paintGrid.color = theme.gridLineColor;
+      paintGridDashed.color = theme.gridDashedLineColor;
+    }
 
     final paintAxis = Paint()
       ..color = theme.spokeLineColor
@@ -136,49 +151,69 @@ class _SpiderChartPainter extends CustomPainter {
 
     canvas.drawCircle(center, radius * 0.25, paintGrid);
 
-    final angleStep = (2 * pi) / labels.length;
+    if (labels.isNotEmpty) {
+      final angleStep = (2 * pi) / labels.length;
 
-    final startAngle = -pi / 2 + rotationAngle;
+      final startAngle = -pi / 2 + rotationAngle;
 
-    for (int i = 0; i < labels.length; i++) {
-      final angle = startAngle + (angleStep * i);
-      final axisEndX = center.dx + radius * cos(angle);
-      final axisEndY = center.dy + radius * sin(angle);
+      for (int i = 0; i < labels.length; i++) {
+        final angle = startAngle + (angleStep * i);
+        final axisEndX = center.dx + radius * cos(angle);
+        final axisEndY = center.dy + radius * sin(angle);
 
-      canvas.drawLine(center, Offset(axisEndX, axisEndY), paintAxis);
+        canvas.drawLine(center, Offset(axisEndX, axisEndY), paintAxis);
 
-      final labelRadius = radius + theme.labelOffsetFromChart;
-      final labelX = center.dx + labelRadius * cos(angle);
-      final labelY = center.dy + labelRadius * sin(angle);
+        final labelRadius = radius + theme.labelOffsetFromChart;
+        final labelX = center.dx + labelRadius * cos(angle);
+        final labelY = center.dy + labelRadius * sin(angle);
 
-      final isSelected = i == selectedIndex;
-      final shouldHighlight = isSelected && theme.showSelectedLabel;
+        final isSelected = i == selectedIndex;
+        final shouldHighlight = isSelected && theme.showSelectedLabel;
 
-      if (showLabels || shouldHighlight) {
-        final style = shouldHighlight
-            ? theme.selectedLabelStyle
-            : theme.labelStyle;
-        _drawText(canvas, labels[i], Offset(labelX, labelY), size, style);
+        if (showLabels || shouldHighlight) {
+          final style = shouldHighlight
+              ? theme.selectedLabelStyle
+              : theme.labelStyle;
+          _drawText(canvas, labels[i], Offset(labelX, labelY), size, style);
+        }
       }
     }
 
-    final gradientPaint = Paint()
-      ..shader = RadialGradient(
-        colors: [
-          Colors.blue.withValues(alpha: 0.8),
-          Colors.purple.withValues(alpha: 0.8),
-        ],
+    final gradientPaint = Paint()..style = PaintingStyle.fill;
+
+    if (theme.centerCircleColor != null) {
+      gradientPaint.color = theme.centerCircleColor!;
+    } else {
+      final centerCircleColors =
+          theme.centerCircleGradientColors ??
+          [
+            Colors.blue.withValues(alpha: 0.8),
+            Colors.purple.withValues(alpha: 0.8),
+          ];
+      gradientPaint.shader = RadialGradient(
+        colors: centerCircleColors,
       ).createShader(Rect.fromCircle(center: center, radius: radius * 0.15));
+    }
+
     canvas.drawCircle(center, radius * 0.15, gradientPaint);
 
     if (data.isEmpty) return;
 
     final path = Path();
     final paintData = Paint()
-      ..color = theme.dataLineColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = theme.strokeWidth
       ..strokeCap = StrokeCap.round;
+
+    if (theme.dataLineGradientColors != null) {
+      paintData.shader = LinearGradient(
+        colors: theme.dataLineGradientColors!,
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ).createShader(Rect.fromCircle(center: center, radius: radius));
+    } else {
+      paintData.color = theme.dataLineColor;
+    }
 
     final paintFill = Paint()..style = PaintingStyle.fill;
 
@@ -192,18 +227,43 @@ class _SpiderChartPainter extends CustomPainter {
 
     final points = <Offset>[];
 
-    for (int i = 0; i < labels.length; i++) {
-      final value = (i < data.length ? data[i] : 0) / maxValue;
-      final angle = startAngle + (angleStep * i);
-      final dataPointRadius = radius * value;
-      final dataPointX = center.dx + dataPointRadius * cos(angle);
-      final dataPointY = center.dy + dataPointRadius * sin(angle);
-      points.add(Offset(dataPointX, dataPointY));
+    if (labels.isNotEmpty) {
+      final angleStep = (2 * pi) / labels.length;
+      final startAngle = -pi / 2 + rotationAngle;
 
-      if (i == 0) {
-        path.moveTo(dataPointX, dataPointY);
-      } else {
-        path.lineTo(dataPointX, dataPointY);
+      for (int i = 0; i < labels.length; i++) {
+        final value = (i < data.length ? (data[i] ?? 0) : 0) / maxValue;
+        final angle = startAngle + (angleStep * i);
+        final dataPointRadius = radius * value;
+        final dataPointX = center.dx + dataPointRadius * cos(angle);
+        final dataPointY = center.dy + dataPointRadius * sin(angle);
+        points.add(Offset(dataPointX, dataPointY));
+      }
+    }
+
+    if (theme.useSpline && points.length > 2) {
+      // Create a closed loop of points for the spline
+      // We add the last point at the beginning and the first two points at the end
+      // to ensure the spline has enough context to close the loop smoothly.
+      // However, extracting the exact segment is tricky with generateSamples.
+      // So we use a simpler approach: Just use the points + first point.
+      // The tangent at the join might be slightly off but acceptable.
+      final simpleSpline = CatmullRomSpline([...points, points.first]);
+      final simpleSamples = simpleSpline.generateSamples(tolerance: 0.01);
+
+      if (simpleSamples.isNotEmpty) {
+        path.moveTo(simpleSamples.first.value.dx, simpleSamples.first.value.dy);
+        for (final sample in simpleSamples) {
+          path.lineTo(sample.value.dx, sample.value.dy);
+        }
+      }
+    } else {
+      for (int i = 0; i < points.length; i++) {
+        if (i == 0) {
+          path.moveTo(points[i].dx, points[i].dy);
+        } else {
+          path.lineTo(points[i].dx, points[i].dy);
+        }
       }
     }
     path.close();
