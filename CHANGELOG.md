@@ -1,3 +1,19 @@
+## 1.0.4
+
+- **New Features**
+  - Added `TitleLabelBehavior` to control title show/hide behavior on tap (always vs toggle).
+  - Added title slide configuration: `titleSlideSpace`, `enableTitleSlide`, `titleSlideDuration`, and `titleSlideCurve` for smoother chart/title transitions.
+  - Added `labelRadiusFactor` to `SpiderChartThemeData` to push/pull labels away from the chart (useful when points sit on the outline).
+
+- **Improvements**
+  - Chart now starts with title/bubble hidden until a tap occurs, matching the new toggle behavior.
+  - Title animation plays only on the first show; label text swaps cleanly without overlap on subsequent label changes.
+  - Chart positioning smoothened: sits at top when hidden, slides down only when the title first appears.
+
+- **Bug Fixes**
+  - Fixed initial title overlap/ghosting when showing the title for the first time.
+  - Bubble anchor now respects `labelRadiusFactor` when anchoring to labels.
+
 ## 1.0.3
 
 - **New Features**:
