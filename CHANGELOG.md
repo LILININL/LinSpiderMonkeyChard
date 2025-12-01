@@ -1,4 +1,4 @@
-## 1.0.5
+## 1.0.6
 
 - **New Features**
 
@@ -18,8 +18,7 @@
   - Bubble anchor now respects `labelRadiusFactor` when anchoring to labels.
 
 - **Maintenance**
-  - Silenced internal lint about deprecated `showTitleSelectedLabel` for compatibility while keeping `titleLabelMode` as the primary API.
-  - Ran `dart format` on updated files for consistent styling.
+  - Synced InteractiveSpiderChart sizing/offsets with parent constraints so chart and bubbles align correctly with labels/points in host apps.
 
 ## 1.0.3
 

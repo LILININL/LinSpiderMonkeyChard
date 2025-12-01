@@ -121,12 +121,18 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
         double height = widget.size.height;
 
         // If size is infinite, use parent constraints
-        if (width.isInfinite) width = constraints.maxWidth;
+        if (width.isInfinite) {
+          width = constraints.maxWidth;
+        } else {
+          width = width.clamp(0.0, constraints.maxWidth);
+        }
         if (height.isInfinite) {
           // If height is infinite, we try to use maxHeight.
           // We subtract 100 to account for the bubble space we add below,
           // effectively making the chart fit within the available space.
           height = constraints.maxHeight - 100;
+        } else {
+          height = height.clamp(0.0, constraints.maxHeight);
         }
 
         // Fallback if still infinite or invalid
@@ -155,6 +161,10 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
             : Duration.zero;
         final Curve slideCurve = widget.theme.titleSlideCurve;
         final double slideOffset = shouldAnimateTitle ? -0.2 : 0.0;
+        final double chartLeft = ((constraints.maxWidth - width) / 2).clamp(
+          0.0,
+          double.infinity,
+        );
 
         final chartSize = Size(width, height);
         final radius = min(width, height) / 2 * 0.85;
@@ -273,8 +283,7 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
                     duration: slideDuration,
                     curve: slideCurve,
                     top: chartTopOffset,
-                    left: 0,
-                    right: 0,
+                    left: chartLeft,
                     child: SizedBox(
                       width: width,
                       height: height,
@@ -295,7 +304,7 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
                   if (selectedIndex != null && widget.labels.isNotEmpty)
                     widget.theme.rotateToTop
                         ? Positioned(
-                            left: width / 2,
+                            left: chartLeft + (width / 2),
                             top: rotateToTopTop,
                             child: FractionalTranslation(
                               translation: const Offset(-0.5, -1.0),
@@ -315,8 +324,8 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
                             duration: widget.theme.rotationDuration,
                             curve: Curves.easeInOut,
                             left: bubbleOffset != null
-                                ? bubbleOffset.dx
-                                : width / 2,
+                                ? chartLeft + bubbleOffset.dx
+                                : chartLeft + (width / 2),
                             top: bubbleOffset != null
                                 ? bubbleOffset.dy + chartTopOffset
                                 : 0,
