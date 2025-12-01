@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'triangle_clipper.dart';
 
 enum BubbleAnchor { label, dataPoint }
+
 enum TitleLabelMode { hidden, shown }
+
 enum TitleLabelBehavior { always, toggleOnTap }
 
 class SpiderChartThemeData {
@@ -175,14 +177,14 @@ class SpiderChartThemeData {
     this.triangleDirection = TriangleDirection.down,
     this.autoTriangleDirection = true,
     this.bubbleAnchor = BubbleAnchor.label,
-  })  : titleLabelMode =
-            showTitleSelectedLabel != null
-                ? (showTitleSelectedLabel
-                    ? TitleLabelMode.shown
-                    : TitleLabelMode.hidden)
-                : titleLabelMode,
-        showTitleSelectedLabel = showTitleSelectedLabel ??
-            (titleLabelMode == TitleLabelMode.shown);
+  }) : titleLabelMode = showTitleSelectedLabel != null
+           ? (showTitleSelectedLabel
+                 ? TitleLabelMode.shown
+                 : TitleLabelMode.hidden)
+           : titleLabelMode,
+       // ignore: deprecated_member_use_from_same_package
+       showTitleSelectedLabel =
+           showTitleSelectedLabel ?? (titleLabelMode == TitleLabelMode.shown);
 
   /// Creates a copy of this theme but with the given fields replaced with the new values.
   SpiderChartThemeData copyWith({
@@ -222,12 +224,11 @@ class SpiderChartThemeData {
     bool? autoTriangleDirection,
     BubbleAnchor? bubbleAnchor,
   }) {
-    final resolvedTitleLabelMode =
-        showTitleSelectedLabel != null
-            ? (showTitleSelectedLabel
-                ? TitleLabelMode.shown
-                : TitleLabelMode.hidden)
-            : titleLabelMode ?? this.titleLabelMode;
+    final resolvedTitleLabelMode = showTitleSelectedLabel != null
+        ? (showTitleSelectedLabel
+              ? TitleLabelMode.shown
+              : TitleLabelMode.hidden)
+        : titleLabelMode ?? this.titleLabelMode;
 
     return SpiderChartThemeData(
       gridLineColor: gridLineColor ?? this.gridLineColor,
@@ -247,8 +248,8 @@ class SpiderChartThemeData {
       labelStyle: labelStyle ?? this.labelStyle,
       selectedLabelStyle: selectedLabelStyle ?? this.selectedLabelStyle,
       showSelectedLabel: showSelectedLabel ?? this.showSelectedLabel,
-      showTitleSelectedLabel:
-          resolvedTitleLabelMode == TitleLabelMode.shown,
+      // ignore: deprecated_member_use_from_same_package
+      showTitleSelectedLabel: resolvedTitleLabelMode == TitleLabelMode.shown,
       titleLabelMode: resolvedTitleLabelMode,
       titleLabelBehavior: titleLabelBehavior ?? this.titleLabelBehavior,
       titleSlideSpace: titleSlideSpace ?? this.titleSlideSpace,

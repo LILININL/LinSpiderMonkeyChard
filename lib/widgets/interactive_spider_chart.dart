@@ -86,8 +86,7 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
     setState(() {
       final isSameSelection = selectedIndex == index;
 
-      if (widget.theme.titleLabelBehavior ==
-              TitleLabelBehavior.toggleOnTap &&
+      if (widget.theme.titleLabelBehavior == TitleLabelBehavior.toggleOnTap &&
           isSameSelection) {
         selectedIndex = null;
         return;
@@ -136,8 +135,8 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
 
         final bool isTitleVisible =
             widget.theme.titleLabelMode == TitleLabelMode.shown &&
-                selectedIndex != null &&
-                widget.labels.isNotEmpty;
+            selectedIndex != null &&
+            widget.labels.isNotEmpty;
         final bool shouldAnimateTitle = isTitleVisible && !_lastTitleVisible;
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!mounted) return;
@@ -145,13 +144,15 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
         });
         final double titleSpace = widget.theme.titleSlideSpace;
         final double extraTitleSpace = isTitleVisible ? titleSpace : 0.0;
-        final double chartTopOffset = widget.theme.chartTopOffset + extraTitleSpace;
+        final double chartTopOffset =
+            widget.theme.chartTopOffset + extraTitleSpace;
         final double totalHeight = height + extraTitleSpace;
         final Duration slideDuration = widget.theme.enableTitleSlide
             ? widget.theme.titleSlideDuration
             : Duration.zero;
-        final Duration titleSwitchDuration =
-            shouldAnimateTitle ? slideDuration : Duration.zero;
+        final Duration titleSwitchDuration = shouldAnimateTitle
+            ? slideDuration
+            : Duration.zero;
         final Curve slideCurve = widget.theme.titleSlideCurve;
         final double slideOffset = shouldAnimateTitle ? -0.2 : 0.0;
 
@@ -208,8 +209,7 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
           // When rotated to top, the point is at -pi/2 (top).
           // Center Y is height/2. Top is height/2 - radius.
           // So position is center - targetRadius.
-          rotateToTopTop =
-              chartTopOffset + (height / 2) - targetRadius;
+          rotateToTopTop = chartTopOffset + (height / 2) - targetRadius;
         }
 
         return AnimatedContainer(
@@ -227,13 +227,14 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
                 clipBehavior: Clip.none,
                 children: [
                   Positioned(
-                    top: (height / 2) -
+                    top:
+                        (height / 2) -
                         radius -
                         100 +
                         widget.theme.titleSelectedLabelTopOffset,
                     left: 16,
                     right: 16,
-                  child: AnimatedSwitcher(
+                    child: AnimatedSwitcher(
                       duration: titleSwitchDuration,
                       layoutBuilder: (currentChild, previousChildren) {
                         return currentChild ?? const SizedBox.shrink();
@@ -263,7 +264,9 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             )
-                          : const SizedBox.shrink(key: ValueKey<String>('no-title')),
+                          : const SizedBox.shrink(
+                              key: ValueKey<String>('no-title'),
+                            ),
                     ),
                   ),
                   AnimatedPositioned(
