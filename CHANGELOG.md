@@ -1,3 +1,11 @@
+## 1.0.7
+
+- **Improvements**
+  - **ChartDetailPage Layout**: Reduced excessive top spacing and optimized offsets for a more compact and balanced presentation.
+  - **Bubble Positioning**: Fixed bubble alignment logic to correctly calculate center coordinates based on actual chart dimensions, resolving issues with non-square charts.
+  - **Layout Robustness**: Removed dependency on `MediaQuery` for bubble positioning, ensuring correct alignment when the chart is used within smaller containers or different layout constraints.
+  - **Sizing**: Added explicit width constraints to the chart stack to prevent layout overflow and misalignment.
+
 ## 1.0.6
 
 - **New Features**

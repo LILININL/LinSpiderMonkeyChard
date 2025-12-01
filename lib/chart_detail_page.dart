@@ -81,16 +81,14 @@ class _ChartDetailPageState extends State<ChartDetailPage> {
     // Calculate initial bubble position based on chart geometry
     // This is an approximation since we don't have the exact render size yet in initState
     // But for the initial state, we can estimate based on the provided chartWidth/Height
-    final size = min(widget.chartWidth, widget.chartHeight);
-    final center = size / 2;
-    final radius = (size / 2) * 0.85;
+    final radius = min(widget.chartWidth, widget.chartHeight) / 2 * 0.85;
     final labelRadius = radius + 25;
     final angleStep = (2 * pi) / widget.labels.length;
     const startAngle = -pi / 2;
 
     final angle = startAngle + (angleStep * index);
-    final labelX = center + labelRadius * cos(angle);
-    final labelY = center + labelRadius * sin(angle);
+    final labelX = (widget.chartWidth / 2) + labelRadius * cos(angle);
+    final labelY = (widget.chartHeight / 2) + labelRadius * sin(angle);
     bubbleOffset = Offset(labelX, labelY);
   }
 
@@ -113,16 +111,17 @@ class _ChartDetailPageState extends State<ChartDetailPage> {
                 textAlign: TextAlign.center,
               )
             else
-              const SizedBox(height: 27),
-          const SizedBox(height: 20),
+              const SizedBox(height: 24),
+          const SizedBox(height: 10),
           SizedBox(
-            height: widget.chartHeight + 100, // Add space for bubble
+            width: widget.chartWidth,
+            height: widget.chartHeight + 50, // Add space for bubble
             child: Stack(
               alignment: Alignment.center,
               clipBehavior: Clip.none,
               children: [
                 Positioned(
-                  top: 60,
+                  top: 20,
                   child: SizedBox(
                     width: widget.chartWidth,
                     height: widget.chartHeight,
@@ -152,16 +151,13 @@ class _ChartDetailPageState extends State<ChartDetailPage> {
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeInOut,
                     left: bubbleOffset != null
-                        ? bubbleOffset!.dx +
-                              (MediaQuery.of(context).size.width -
-                                      widget.chartWidth) /
-                                  2 -
-                              40 // Adjust for bubble width/2 and centering
-                        : (MediaQuery.of(context).size.width / 2) -
+                        ? bubbleOffset!.dx -
+                              40 // Adjust for bubble width/2
+                        : (widget.chartWidth / 2) -
                               40, // Center if no selection
                     top: bubbleOffset != null
                         ? bubbleOffset!.dy +
-                              60 -
+                              20 -
                               70 // Adjust for bubble height and chart top offset
                         : 0, // Top position if no selection
                     child: ScoreBubble(
