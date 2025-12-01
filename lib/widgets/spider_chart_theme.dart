@@ -61,6 +61,18 @@ class SpiderChartThemeData {
   /// - [TitleLabelBehavior.toggleOnTap]: tapping the same point hides/shows it.
   final TitleLabelBehavior titleLabelBehavior;
 
+  /// Vertical space reserved when the title is visible (used to slide chart down).
+  final double titleSlideSpace;
+
+  /// Whether to animate the chart/title sliding when toggling visibility.
+  final bool enableTitleSlide;
+
+  /// Duration for the slide/fade animations related to the title visibility.
+  final Duration titleSlideDuration;
+
+  /// Curve for the slide/fade animations related to the title visibility.
+  final Curve titleSlideCurve;
+
   /// Whether to use spline (curved) lines for the data polygon
   final bool useSpline;
 
@@ -75,6 +87,9 @@ class SpiderChartThemeData {
 
   /// Distance from the chart outer ring to the labels
   final double labelOffsetFromChart;
+
+  /// Multiplier for label radius (use >1 to push labels outward, <1 to pull inward)
+  final double labelRadiusFactor;
 
   /// Vertical offset for the score bubble
   final double bubbleOffset;
@@ -137,6 +152,10 @@ class SpiderChartThemeData {
     bool? showTitleSelectedLabel,
     TitleLabelMode titleLabelMode = TitleLabelMode.hidden,
     this.titleLabelBehavior = TitleLabelBehavior.always,
+    this.titleSlideSpace = 60.0,
+    this.enableTitleSlide = true,
+    this.titleSlideDuration = const Duration(milliseconds: 450),
+    this.titleSlideCurve = Curves.easeInOutCubic,
     this.useSpline = false,
     this.titleSelectedLabelStyle = const TextStyle(
       color: Colors.black87,
@@ -146,6 +165,7 @@ class SpiderChartThemeData {
     this.titleSelectedLabelTopOffset = 0.0,
     this.chartTopOffset = 0.0,
     this.labelOffsetFromChart = 10.0,
+    this.labelRadiusFactor = 1.0,
     this.bubbleOffset = 10.0,
     this.strokeWidth = 3.0,
     this.pointSize = 4.0,
@@ -183,10 +203,15 @@ class SpiderChartThemeData {
     bool? showTitleSelectedLabel,
     TitleLabelMode? titleLabelMode,
     TitleLabelBehavior? titleLabelBehavior,
+    double? titleSlideSpace,
+    bool? enableTitleSlide,
+    Duration? titleSlideDuration,
+    Curve? titleSlideCurve,
     TextStyle? titleSelectedLabelStyle,
     double? titleSelectedLabelTopOffset,
     double? chartTopOffset,
     double? labelOffsetFromChart,
+    double? labelRadiusFactor,
     double? bubbleOffset,
     double? strokeWidth,
     double? pointSize,
@@ -226,12 +251,17 @@ class SpiderChartThemeData {
           resolvedTitleLabelMode == TitleLabelMode.shown,
       titleLabelMode: resolvedTitleLabelMode,
       titleLabelBehavior: titleLabelBehavior ?? this.titleLabelBehavior,
+      titleSlideSpace: titleSlideSpace ?? this.titleSlideSpace,
+      enableTitleSlide: enableTitleSlide ?? this.enableTitleSlide,
+      titleSlideDuration: titleSlideDuration ?? this.titleSlideDuration,
+      titleSlideCurve: titleSlideCurve ?? this.titleSlideCurve,
       titleSelectedLabelStyle:
           titleSelectedLabelStyle ?? this.titleSelectedLabelStyle,
       titleSelectedLabelTopOffset:
           titleSelectedLabelTopOffset ?? this.titleSelectedLabelTopOffset,
       chartTopOffset: chartTopOffset ?? this.chartTopOffset,
       labelOffsetFromChart: labelOffsetFromChart ?? this.labelOffsetFromChart,
+      labelRadiusFactor: labelRadiusFactor ?? this.labelRadiusFactor,
       bubbleOffset: bubbleOffset ?? this.bubbleOffset,
       strokeWidth: strokeWidth ?? this.strokeWidth,
       pointSize: pointSize ?? this.pointSize,

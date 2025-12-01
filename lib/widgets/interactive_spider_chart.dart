@@ -33,6 +33,7 @@ class InteractiveSpiderChart extends StatefulWidget {
 class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
   int? selectedIndex;
   double _targetRotation = 0.0;
+  bool _lastTitleVisible = false;
 
   @override
   void initState() {
@@ -43,19 +44,6 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
   void _initializeSelection() {
     if (widget.initialSelectedIndex != null) {
       selectedIndex = widget.initialSelectedIndex;
-    } else if (widget.data.isNotEmpty) {
-      // Find first index with score > 0
-      int foundIndex = -1;
-      for (int i = 0; i < widget.data.length; i++) {
-        if ((widget.data[i] ?? 0) > 0) {
-          foundIndex = i;
-          break;
-        }
-      }
-
-      if (foundIndex != -1) {
-        selectedIndex = foundIndex;
-      }
     }
 
     if (selectedIndex != null &&
@@ -80,7 +68,9 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
           widget.maxValue;
       targetRadius = radius * value;
     } else {
-      targetRadius = radius + widget.theme.labelOffsetFromChart;
+      targetRadius =
+          (radius + widget.theme.labelOffsetFromChart) *
+          widget.theme.labelRadiusFactor;
     }
 
     final angleStep = (2 * pi) / widget.labels.length;
@@ -148,10 +138,22 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
             widget.theme.titleLabelMode == TitleLabelMode.shown &&
                 selectedIndex != null &&
                 widget.labels.isNotEmpty;
-        // Reserve extra space for the animated title without moving the chart itself.
-        const double titleSpace = 80.0;
-        final double chartTopOffset = widget.theme.chartTopOffset;
-        final double totalHeight = height + titleSpace;
+        final bool shouldAnimateTitle = isTitleVisible && !_lastTitleVisible;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          _lastTitleVisible = isTitleVisible;
+        });
+        final double titleSpace = widget.theme.titleSlideSpace;
+        final double extraTitleSpace = isTitleVisible ? titleSpace : 0.0;
+        final double chartTopOffset = widget.theme.chartTopOffset + extraTitleSpace;
+        final double totalHeight = height + extraTitleSpace;
+        final Duration slideDuration = widget.theme.enableTitleSlide
+            ? widget.theme.titleSlideDuration
+            : Duration.zero;
+        final Duration titleSwitchDuration =
+            shouldAnimateTitle ? slideDuration : Duration.zero;
+        final Curve slideCurve = widget.theme.titleSlideCurve;
+        final double slideOffset = shouldAnimateTitle ? -0.2 : 0.0;
 
         final chartSize = Size(width, height);
         final radius = min(width, height) / 2 * 0.85;
@@ -210,7 +212,9 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
               chartTopOffset + (height / 2) - targetRadius;
         }
 
-        return SizedBox(
+        return AnimatedContainer(
+          duration: slideDuration,
+          curve: slideCurve,
           width: width,
           height: totalHeight,
           child: TweenAnimationBuilder<double>(
@@ -229,16 +233,21 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
                         widget.theme.titleSelectedLabelTopOffset,
                     left: 16,
                     right: 16,
-                    child: AnimatedSwitcher(
-                      duration: widget.theme.rotationDuration,
+                  child: AnimatedSwitcher(
+                      duration: titleSwitchDuration,
+                      layoutBuilder: (currentChild, previousChildren) {
+                        return currentChild ?? const SizedBox.shrink();
+                      },
                       transitionBuilder: (child, animation) {
-                        final curved =
-                            CurvedAnimation(parent: animation, curve: Curves.easeInOut);
+                        final curved = CurvedAnimation(
+                          parent: animation,
+                          curve: widget.theme.titleSlideCurve,
+                        );
                         return FadeTransition(
                           opacity: curved,
                           child: SlideTransition(
                             position: Tween<Offset>(
-                              begin: const Offset(0, -0.2),
+                              begin: Offset(0, slideOffset),
                               end: Offset.zero,
                             ).animate(curved),
                             child: child,
@@ -257,7 +266,9 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
                           : const SizedBox.shrink(key: ValueKey<String>('no-title')),
                     ),
                   ),
-                  Positioned(
+                  AnimatedPositioned(
+                    duration: slideDuration,
+                    curve: slideCurve,
                     top: chartTopOffset,
                     left: 0,
                     right: 0,
@@ -372,6 +383,15 @@ class _InteractiveSpiderChartState extends State<InteractiveSpiderChart> {
         );
       },
     );
+  }
+
+  @override
+  void didUpdateWidget(covariant InteractiveSpiderChart oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Reset title visibility tracking if labels list shrinks to empty.
+    if (widget.labels.isEmpty) {
+      _lastTitleVisible = false;
+    }
   }
 }
 

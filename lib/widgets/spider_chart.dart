@@ -57,12 +57,13 @@ class SpiderChart extends StatelessWidget {
 
     final center = Offset(size.width / 2, size.height / 2);
     final radius = min(size.width, size.height) / 2 * 0.85;
+    final labelRadiusBase = radius + theme.labelOffsetFromChart;
     final angleStep = (2 * pi) / labels.length;
     final startAngle = -pi / 2 + rotationAngle;
 
     for (int i = 0; i < labels.length; i++) {
       final angle = startAngle + (angleStep * i);
-      final labelRadius = radius + theme.labelOffsetFromChart;
+      final labelRadius = labelRadiusBase * theme.labelRadiusFactor;
       final labelX = center.dx + labelRadius * cos(angle);
       final labelY = center.dy + labelRadius * sin(angle);
 
@@ -115,6 +116,7 @@ class _SpiderChartPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = min(size.width, size.height) / 2 * 0.85;
+    final labelRadiusBase = radius + theme.labelOffsetFromChart;
 
     final paintGrid = Paint()
       ..style = PaintingStyle.stroke
@@ -163,7 +165,7 @@ class _SpiderChartPainter extends CustomPainter {
 
         canvas.drawLine(center, Offset(axisEndX, axisEndY), paintAxis);
 
-        final labelRadius = radius + theme.labelOffsetFromChart;
+        final labelRadius = labelRadiusBase * theme.labelRadiusFactor;
         final labelX = center.dx + labelRadius * cos(angle);
         final labelY = center.dy + labelRadius * sin(angle);
 

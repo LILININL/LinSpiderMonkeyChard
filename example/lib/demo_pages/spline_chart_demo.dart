@@ -87,9 +87,10 @@ class _SplineChartDemoState extends State<SplineChartDemo> {
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
+                  showTitleSelectedLabel: true,
                   bubbleAnchor: BubbleAnchor.label,
                   autoTriangleDirection: true,
-                  titleLabelMode: TitleLabelMode.shown,
+                  titleLabelMode: TitleLabelMode.hidden,
                   titleLabelBehavior: TitleLabelBehavior.toggleOnTap,
                   titleSelectedLabelTopOffset: 0,
                   titleSelectedLabelStyle: TextStyle(
