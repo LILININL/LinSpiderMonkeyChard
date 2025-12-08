@@ -1,3 +1,8 @@
+## 1.0.8
+
+- **Maintenance**
+  - Lowered minimum Dart SDK constraint to `^3.0.0` to support a wider range of environments.
+
 ## 1.0.7
 
 - **Improvements**
