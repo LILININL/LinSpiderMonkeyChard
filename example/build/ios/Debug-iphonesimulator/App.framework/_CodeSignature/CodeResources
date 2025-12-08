@@ -22,7 +22,7 @@
 		</data>
 		<key>flutter_assets/NOTICES.Z</key>
 		<data>
-		c7CTf9HpWP3hUV3YPg3KT/YNf1g=
+		m+bWehLPVJWLkAE7DNEMmX81xNI=
 		</data>
 		<key>flutter_assets/NativeAssetsManifest.json</key>
 		<data>
@@ -34,19 +34,23 @@
 		</data>
 		<key>flutter_assets/isolate_snapshot_data</key>
 		<data>
-		jFlVxVvs0GUk3gpipcs+5qzuKEw=
+		Oct4LBWkbrUyhS8o11D8knDiOCw=
 		</data>
 		<key>flutter_assets/kernel_blob.bin</key>
 		<data>
-		vdXNAGP5n6QtbotqRi6/dcbtO1o=
+		3APoQXG/dMAGPEsBIZMDXjlMdZ0=
 		</data>
 		<key>flutter_assets/shaders/ink_sparkle.frag</key>
 		<data>
 		VvTF10G1gIeea4aI0DhJjCjHgXQ=
 		</data>
+		<key>flutter_assets/shaders/stretch_effect.frag</key>
+		<data>
+		kG7Fh+R6JkaM/GufJFUfEToHTEg=
+		</data>
 		<key>flutter_assets/vm_snapshot_data</key>
 		<data>
-		yyq5EcsmxYyBwFjTZrLTRBq4XWU=
+		3y4zj1lbLxr1MIJjsR7xSTsrd4k=
 		</data>
 	</dict>
 	<key>files2</key>
@@ -76,7 +80,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			Ai17sZd3YWv00DMDcfXUc21GKWVkxlW25XVLeTfD94w=
+			4Ap64RyEqznZyH/w/KCnhojqG4cYCssQ5tyBQv6yc8U=
 			</data>
 		</dict>
 		<key>flutter_assets/NativeAssetsManifest.json</key>
@@ -97,14 +101,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			AGMtrneYCkzky8gN/u4wEEHSYfcyPTl63SSnj7+fRpU=
+			wHUhal5u7BswH9uKyMGmAinBbqMbGrC0nmFvt+raT08=
 			</data>
 		</dict>
 		<key>flutter_assets/kernel_blob.bin</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			jQMxgJqHlK9kSv2+UcrPK2PEkQoFzeNSyBWpirI85co=
+			mPlcOTFnVe/25GPyTKSNQc63I3X43Y87LzOjl5vEG8A=
 			</data>
 		</dict>
 		<key>flutter_assets/shaders/ink_sparkle.frag</key>
@@ -114,11 +118,18 @@
 			TGVjYgE+Oyl6guvhhPPrWfynkxkJeFjSzSLsQqn7Q3M=
 			</data>
 		</dict>
+		<key>flutter_assets/shaders/stretch_effect.frag</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			Y/95u280RMpR6e6ndBjH5Pm8ujZSD5Qf33woQ/NncNU=
+			</data>
+		</dict>
 		<key>flutter_assets/vm_snapshot_data</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			9GUhMA+MB30KbahT/4tgci98x/CLK+R2R7dFrti99M8=
+			OdF1NJaYIhUMtPHX5I2sunghfvWky6zAyizwBbVifbU=
 			</data>
 		</dict>
 	</dict>
