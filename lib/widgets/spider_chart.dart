@@ -22,8 +22,8 @@ class SpiderChart extends StatelessWidget {
     this.showLabels = true,
     this.selectedIndex,
     this.rotationAngle = 0.0,
-  }) : labels = labels ?? const [],
-       data = data ?? const [];
+  })  : labels = labels ?? const [],
+        data = data ?? const [];
 
   @override
   Widget build(BuildContext context) {
@@ -173,9 +173,8 @@ class _SpiderChartPainter extends CustomPainter {
         final shouldHighlight = isSelected && theme.showSelectedLabel;
 
         if (showLabels || shouldHighlight) {
-          final style = shouldHighlight
-              ? theme.selectedLabelStyle
-              : theme.labelStyle;
+          final style =
+              shouldHighlight ? theme.selectedLabelStyle : theme.labelStyle;
           _drawText(canvas, labels[i], Offset(labelX, labelY), size, style);
         }
       }
@@ -186,8 +185,7 @@ class _SpiderChartPainter extends CustomPainter {
     if (theme.centerCircleColor != null) {
       gradientPaint.color = theme.centerCircleColor!;
     } else {
-      final centerCircleColors =
-          theme.centerCircleGradientColors ??
+      final centerCircleColors = theme.centerCircleGradientColors ??
           [
             Colors.blue.withValues(alpha: 0.8),
             Colors.purple.withValues(alpha: 0.8),

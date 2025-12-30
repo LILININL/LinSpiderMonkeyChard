@@ -53,15 +53,27 @@ SpiderChart(
 )
 ```
 
-### 2. Interactive Spider Chart
+### Interactive Spider Chart
 
-The `InteractiveSpiderChart` adds interactivity, such as rotating the chart to focus on a selected point and showing a score bubble.
+A wrapper around `SpiderChart` that adds touch interaction, animations, and score bubbles.
+
+**New in 1.0.9**: The chart now adapts responsively to its parent constraints. You can wrap it in a `SizedBox`, `Expanded`, or `AspectRatio` to control its size. It also fully supports `Size.infinite` usage for unbounded layouts.
 
 ```dart
-InteractiveSpiderChart(
-  labels: ['A', 'B', 'C', 'D', 'E'],
-  data: [80, 70, 90, 60, 85],
-  maxValue: 100,
+ SizedBox(
+  height: 400, // Define height or use Expanded
+  child: InteractiveSpiderChart(
+    data: data,
+    maxValue: 100,
+    labels: labels,
+    size: Size.infinite, // Use infinite to fill parent
+    theme: SpiderChartThemeData(
+       chartTopOffset: 0,
+       // ... other theme options
+    ),
+  ),
+)
+```
   // Size of the interactive area
   size: Size(300, 400),
   // Theme with interactive specific settings

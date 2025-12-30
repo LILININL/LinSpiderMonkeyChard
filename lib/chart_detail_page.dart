@@ -51,8 +51,8 @@ class ChartDetailPage extends StatefulWidget {
     this.showTitleText = true,
     this.showChartLabels = true,
     this.initialSelectedIndex,
-  }) : labels = labels ?? const [],
-       data = data ?? const [];
+  })  : labels = labels ?? const [],
+        data = data ?? const [];
 
   @override
   State<ChartDetailPage> createState() => _ChartDetailPageState();
@@ -151,18 +151,16 @@ class _ChartDetailPageState extends State<ChartDetailPage> {
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeInOut,
                     left: bubbleOffset != null
-                        ? bubbleOffset!.dx -
-                              40 // Adjust for bubble width/2
+                        ? bubbleOffset!.dx - 40 // Adjust for bubble width/2
                         : (widget.chartWidth / 2) -
-                              40, // Center if no selection
+                            40, // Center if no selection
                     top: bubbleOffset != null
                         ? bubbleOffset!.dy +
-                              20 -
-                              70 // Adjust for bubble height and chart top offset
+                            20 -
+                            70 // Adjust for bubble height and chart top offset
                         : 0, // Top position if no selection
                     child: ScoreBubble(
-                      score:
-                          (selectedIndex! < widget.data.length
+                      score: (selectedIndex! < widget.data.length
                               ? widget.data[selectedIndex!]
                               : 0) ??
                           0,
@@ -185,9 +183,8 @@ class _ChartDetailPageState extends State<ChartDetailPage> {
         foregroundColor: Colors.black,
       ),
       backgroundColor: Colors.white,
-      body: widget.enableScroll
-          ? SingleChildScrollView(child: content)
-          : content,
+      body:
+          widget.enableScroll ? SingleChildScrollView(child: content) : content,
     );
   }
 }

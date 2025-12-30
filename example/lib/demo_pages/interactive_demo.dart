@@ -56,63 +56,61 @@ class _InteractiveDemoState extends State<InteractiveDemo> {
           ),
 
           // Chart Area
-          Container(
-            width: 1500,
-            // height: ?,
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: InteractiveSpiderChart(
-                labels: labels,
-                data: [100, 100, 100, 100, 100],
-                maxValue: 100,
-                size: Size.infinite,
-                theme: SpiderChartThemeData(
-                  labelRadiusFactor: 1.2,
-                  // กำหนดทิศทางของสามเหลี่ยม (up หรือ down)
-                  triangleDirection: TriangleDirection.up,
-                  // centerCircleGradientColors: [Colors.black, Colors.grey],
-                  gridDashedLineColor: Colors.blue,
-                  dataLineColor: Colors.purple,
-                  gridLineColor: Colors.orange,
-                  // labelOffsetFromChart: 20,
-                  // bubbleOffset: 0,
-                  chartTopOffset: 0,
-                  titleSelectedLabelTopOffset: 30,
-                  showTitleSelectedLabel: true,
-                  bubbleAnchor: BubbleAnchor.label,
-                  rotateToTop: false,
-                  rotationDuration: Duration(milliseconds: 1000),
-                  showSelectedLabel: true,
-                  titleLabelMode: TitleLabelMode.hidden,
+          InteractiveSpiderChart(
+            labels: labels,
+            data: data,
+            maxValue: 100,
+            // Use Size.fromHeight to set base height, allowing width to be flexible
+            // and height to expand if autoHeightAdjustment is triggered.
+            size: const Size.fromHeight(370),
+            theme: SpiderChartThemeData(
+              labelRadiusFactor: 1.2,
+              // กำหนดทิศทางของสามเหลี่ยม (up หรือ down)
+              triangleDirection: TriangleDirection.up,
+              // centerCircleGradientColors: [Colors.black, Colors.grey],
+              gridDashedLineColor: Colors.blue,
+              dataLineColor: Colors.purple,
+              gridLineColor: Colors.orange,
+              // labelOffsetFromChart: 20,
+              chartTopOffset: 0,
+              bottomPadding: 50, // No extra padding needed now
+              // autoHeightAdjustment: false,
+              titleSelectedLabelTopOffset:
+                  105, // Adjusted to reasonable value (10px up from chart top)
+              showTitleSelectedLabel: true,
+              bubbleAnchor: BubbleAnchor.label,
+              rotateToTop: false,
+              rotationDuration: Duration(milliseconds: 1000),
+              showSelectedLabel: true,
+              titleLabelMode: TitleLabelMode.hidden,
+              titleSlideSpace: 40, // Match new default for compact title space
 
-                  titleSelectedLabelStyle: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  selectedLabelStyle: TextStyle(
-                    color: Colors.indigo,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                  ),
-                  labelStyle: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  dataFillColor: Color(0x333F51B5),
-                  pointColor: Colors.indigo,
-                  useGradient: true,
-                  titleLabelBehavior: TitleLabelBehavior.toggleOnTap,
-                  gradientColors: [Color(0x663F51B5), Color(0x333F51B5)],
-                ),
+              titleSelectedLabelStyle: TextStyle(
+                color: Colors.black87,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
+              selectedLabelStyle: TextStyle(
+                color: Colors.indigo,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
+              labelStyle: TextStyle(
+                color: Colors.black87,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+              dataFillColor: Color(0x333F51B5),
+              pointColor: Colors.indigo,
+              useGradient: true,
+              titleLabelBehavior: TitleLabelBehavior.toggleOnTap,
+              gradientColors: [Color(0x663F51B5), Color(0x333F51B5)],
             ),
           ),
 
           // Legend / Info
           Container(
-            padding: const EdgeInsets.all(16),
+            // padding: const EdgeInsets.all(16),
             color: Colors.grey[50],
             child: Column(
               children: [

@@ -120,6 +120,20 @@ class SpiderChartThemeData {
   /// Where to anchor the score bubble (label or data point)
   final BubbleAnchor bubbleAnchor;
 
+  /// The padding (in logical pixels) to add to the bottom of the chart when calculating content overflow.
+  /// This allows pushing down subsequent widgets (like those in a Column) when a bottom-aligned score bubble appears,
+  /// preventing overlap.
+  final double bottomPadding;
+
+  /// Whether to automatically adjust the chart's height to accommodate the score bubble when it appears
+  /// at the bottom.
+  ///
+  /// If true (default), the chart will expand its height (and push sibling widgets down) if the bubble
+  /// overflows the bottom edge.
+  /// If false, the chart height remains fixed, and the bubble may be clipped or overlap other widgets
+  /// depending on layout.
+  final bool autoHeightAdjustment;
+
   const SpiderChartThemeData({
     this.gridLineColor = const Color(
       0x4D9E9E9E,
@@ -154,7 +168,7 @@ class SpiderChartThemeData {
     bool? showTitleSelectedLabel,
     TitleLabelMode titleLabelMode = TitleLabelMode.hidden,
     this.titleLabelBehavior = TitleLabelBehavior.always,
-    this.titleSlideSpace = 60.0,
+    this.titleSlideSpace = 40.0,
     this.enableTitleSlide = true,
     this.titleSlideDuration = const Duration(milliseconds: 450),
     this.titleSlideCurve = Curves.easeInOutCubic,
@@ -177,14 +191,16 @@ class SpiderChartThemeData {
     this.triangleDirection = TriangleDirection.down,
     this.autoTriangleDirection = true,
     this.bubbleAnchor = BubbleAnchor.label,
-  }) : titleLabelMode = showTitleSelectedLabel != null
-           ? (showTitleSelectedLabel
-                 ? TitleLabelMode.shown
-                 : TitleLabelMode.hidden)
-           : titleLabelMode,
-       // ignore: deprecated_member_use_from_same_package
-       showTitleSelectedLabel =
-           showTitleSelectedLabel ?? (titleLabelMode == TitleLabelMode.shown);
+    this.bottomPadding = 0.0,
+    this.autoHeightAdjustment = true,
+  })  : titleLabelMode = showTitleSelectedLabel != null
+            ? (showTitleSelectedLabel
+                ? TitleLabelMode.shown
+                : TitleLabelMode.hidden)
+            : titleLabelMode,
+        // ignore: deprecated_member_use_from_same_package
+        showTitleSelectedLabel =
+            showTitleSelectedLabel ?? (titleLabelMode == TitleLabelMode.shown);
 
   /// Creates a copy of this theme but with the given fields replaced with the new values.
   SpiderChartThemeData copyWith({
@@ -223,11 +239,15 @@ class SpiderChartThemeData {
     TriangleDirection? triangleDirection,
     bool? autoTriangleDirection,
     BubbleAnchor? bubbleAnchor,
+    bool? useSpline,
+    double? splineTension,
+    double? bottomPadding,
+    bool? autoHeightAdjustment,
   }) {
     final resolvedTitleLabelMode = showTitleSelectedLabel != null
         ? (showTitleSelectedLabel
-              ? TitleLabelMode.shown
-              : TitleLabelMode.hidden)
+            ? TitleLabelMode.shown
+            : TitleLabelMode.hidden)
         : titleLabelMode ?? this.titleLabelMode;
 
     return SpiderChartThemeData(
@@ -273,6 +293,9 @@ class SpiderChartThemeData {
       autoTriangleDirection:
           autoTriangleDirection ?? this.autoTriangleDirection,
       bubbleAnchor: bubbleAnchor ?? this.bubbleAnchor,
+      useSpline: useSpline ?? this.useSpline,
+      bottomPadding: bottomPadding ?? this.bottomPadding,
+      autoHeightAdjustment: autoHeightAdjustment ?? this.autoHeightAdjustment,
     );
   }
 }

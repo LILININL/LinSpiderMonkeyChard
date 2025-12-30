@@ -1,3 +1,18 @@
+## 1.1.3
+- /
+
+
+## 1.1.0
+- Refactor `InteractiveSpiderChart` layout to properly fit constraints (SizedBox/Expanded).
+- Remove hardcoded size subtractions to prevent layout squeezing.
+
+
+## 1.0.9
+- Refactor `InteractiveSpiderChart` layout to properly fit constraints (SizedBox/Expanded).
+- Remove hardcoded size subtractions to prevent layout squeezing.
+- Implement dynamic height resizing when bottom score bubble appears to prevent overlapping.
+- Update `titleSelectedLabelTopOffset` logic to be relative to label position (0 starts at label).
+
 ## 1.0.8
 
 - **Maintenance**
